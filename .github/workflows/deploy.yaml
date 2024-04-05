@@ -48,7 +48,7 @@ jobs:
       - name: Deploy to VM
         run: |
        
-          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} " docker-compose build --no-cache "
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} " docker-compose -f ${{env.DEPLOY_DIRECTORY}}/docker-compose.yaml build --no-cache "
 
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} \
           "docker-compose --env-file ${{env.ENV_FILE_PATH}} -p auth -f ${{env.DEPLOY_DIRECTORY}}/docker-compose.yaml up -d"
