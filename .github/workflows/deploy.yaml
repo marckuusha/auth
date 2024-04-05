@@ -18,6 +18,8 @@ jobs:
       DEPLOY_DIRECTORY: /root/app/${{ github.event.repository.name }}
       ENV_FILE_PATH: /root/app/${{ github.event.repository.name }}/config.env
       CONFIG_PATH: /root/app/${{ github.event.repository.name }}/config/prod.yaml
+      PG_STRING: "postgres://chatroot:BcgolDOaRS1KhGN@0.0.0.0:5432/chatdb?sslmode=disable"
+
 
     steps:
       - name: Checkout repository
@@ -57,7 +59,7 @@ jobs:
           touch ${{ env.ENV_FILE_PATH }} && \
           chmod 600 ${{ env.ENV_FILE_PATH }} && \
           echo 'CONFIG_PATH=${{ env.CONFIG_PATH }}' > ${{ env.ENV_FILE_PATH }} && \
-          echo 'HTTP_SERVER_PASSWORD=${{ secrets.AUTH_PASS }}' >> ${{ env.ENV_FILE_PATH }}"
+          echo 'PG_STRING=$PG_STRING' >> ${{ env.ENV_FILE_PATH }}"
     #   - name: Copy systemd service file
     #     run: |
     #       scp -i deploy_key.pem -o StrictHostKeyChecking=no ${{ github.workspace }}/deployment/bro-service.service ${{ env.HOST }}:/tmp/bro-service.service
