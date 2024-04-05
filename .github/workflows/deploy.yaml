@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HOST: root@46.161.52.147
-      DEPLOY_DIRECTORY: /root/app/${{ github.repository }}
-      ENV_FILE_PATH: /root/app/${{ github.repository }}/config.env
+      DEPLOY_DIRECTORY: /root/app/${{ github.repository.name }}
+      ENV_FILE_PATH: /root/app/${{ github.repository.name }}/config.env
 
       #CONFIG_PATH: /root/app/${{ github.repository }}/config/prod.yaml
 
@@ -44,9 +44,9 @@ jobs:
           rsync -avz -e 'ssh -i deploy_key.pem -o StrictHostKeyChecking=no' --exclude='.git' --exclude='.old' ./ ${{ env.HOST }}:${{ env.DEPLOY_DIRECTORY }}
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-    #   - name: Remove old systemd service file
-    #     run: |
-    #       ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} "rm -f /etc/systemd/system/bro-service.service"
+      - name: Remove old systemd service file
+        run: |
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} "rm -f /etc/systemd/system/bro-service.service"
     #   - name: List workspace contents
     #     run: |
     #       echo "Listing deployment folder contents:"
