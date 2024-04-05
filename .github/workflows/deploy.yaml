@@ -38,6 +38,8 @@ jobs:
           touch ${{ env.ENV_FILE_PATH }} && \
           chmod 600 ${{ env.ENV_FILE_PATH }} && \
           echo 'PG_STRING=${{ secrets.PG_STRING }}' >> ${{ env.ENV_FILE_PATH }}"
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       - name: Deploy to VM
         run: |
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} \
