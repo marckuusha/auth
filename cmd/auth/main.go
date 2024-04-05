@@ -17,8 +17,6 @@ func main() {
 		logger.Fatalf("cannot get PG_STRING")
 	}
 
-	// postgres://habrpguser:pgpwd4habr@postgres:5432/habrdb?sslmode=disable
-
 	dbconn, err := db.CreateDatabasePoolConnections(dbstring)
 	if err != nil {
 		logger.Fatalf("cannot connect to db: %s", err)
