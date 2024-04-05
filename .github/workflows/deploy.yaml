@@ -38,10 +38,14 @@ jobs:
           touch ${{ env.ENV_FILE_PATH }} && \
           chmod 600 ${{ env.ENV_FILE_PATH }} && \
           echo 'PG_STRING=${{ secrets.PG_STRING }}' >> ${{ env.ENV_FILE_PATH }}"
+          
+          rsync -avz -e 'ssh -i deploy_key.pem -o StrictHostKeyChecking=no' --exclude='.git' ./ ${{ env.HOST }}:${{ env.DEPLOY_DIRECTORY }}
+
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       - name: Deploy to VM
         run: |
+
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} \
           "docker-compose --env-file ${{env.ENV_FILE_PATH}} -p auth -f ${{env.DEPLOY_DIRECTORY}}/docker-compose.yaml up -d"
         env:
