@@ -1,7 +1,7 @@
 
 FROM golang:1.21 as build 
 
-WORKDIR /app
+WORKDIR /app_auth
 
 COPY . . 
 
@@ -11,7 +11,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /auth ./cmd/auth
 
 FROM scratch 
 
-WORKDIR /app 
+WORKDIR /app_auth 
 
 COPY --from=build /auth /auth 
 
