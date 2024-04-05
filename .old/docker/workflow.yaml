@@ -1,0 +1,54 @@
+name: Deploy AuthService
+
+# предварительно на сервере установлен docker и docker-composes
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to play"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HOST: root@46.161.52.147
+      DEPLOY_DIRECTORY: /root/app/auth
+      ENV_FILE_PATH: /root/app/auth/config.env
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Create environment file on server
+        run: |
+          sudo apt-get install -y ssh rsync
+          echo "$DEPLOY_SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} "mkdir -p ${{ env.DEPLOY_DIRECTORY }}"
+
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} "\
+          touch ${{ env.ENV_FILE_PATH }} && \
+          chmod 600 ${{ env.ENV_FILE_PATH }} && \
+          echo 'PG_STRING=${{ secrets.PG_STRING }}' >> ${{ env.ENV_FILE_PATH }}"
+
+          rsync -avz -e 'ssh -i deploy_key.pem -o StrictHostKeyChecking=no' --exclude='.git' ./ ${{ env.HOST }}:${{ env.DEPLOY_DIRECTORY }}
+
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} "ls"
+
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Deploy to VM
+        run: |
+       
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} " docker-compose -f ${{env.DEPLOY_DIRECTORY}}/docker-compose.yaml build --no-cache "
+
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} \
+          "docker-compose --env-file ${{env.ENV_FILE_PATH}} -p auth -f ${{env.DEPLOY_DIRECTORY}}/docker-compose.yaml up -d"
