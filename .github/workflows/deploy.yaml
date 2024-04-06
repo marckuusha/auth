@@ -55,6 +55,11 @@ jobs:
           chmod 600 ${{ env.ENV_FILE_PATH }} && \
           echo 'CONFIG_PATH=${{ env.CONFIG_PATH }}' > ${{ env.ENV_FILE_PATH }} && \
           echo 'PG_STRING=$PG_STRING' >> ${{ env.ENV_FILE_PATH }}"
+      - name: List workspace contents
+        run: |
+            echo "Listing deployment folder contents:"
+            echo ${{ github.workspace }}
+            ls -la ${{ github.workspace }}/deployment
       - name: Copy systemd service file
         run: |
           scp -i deploy_key.pem -o StrictHostKeyChecking=no ${{ github.workspace }}/deployment/auth.service ${{ env.HOST }}:/tmp/auth.service
