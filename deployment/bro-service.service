@@ -1,0 +1,15 @@
+[Unit]
+Description=Auth
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/app/auth
+ExecStart=/root/app/auth/auth
+Restart=always
+RestartSec=4
+StandardOutput=inherit
+EnvironmentFile=/root/app/auth/config.env
+
+[Install]
+WantedBy=multi-user.target
